@@ -7,46 +7,27 @@ import 'package:statemanagement_3c/screens/manageproduct.dart';
 class ViewProductsScreen extends StatelessWidget {
   ViewProductsScreen({super.key});
 
-  // List<Product> listProducts = [
-  //   Product(productCode: 'AB1', nameDesc: 'iPhone15', price: 56000),
-  //   Product(productCode: 'ET1', nameDesc: 'Samsung Galaxy', price: 35000),
-  //   Product(productCode: 'ET2', nameDesc: 'Samsung Galaxy2', price: 5000),
-  // ];
+  void openAddScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ManageProductScreen(),
+      ),
+    );
+  }
 
-  // void addProduct(Product p) {
-  //   setState(() {
-  //     listProducts.add(p);
-  //   });
-  // }
+  void openEditScreen(BuildContext context, int index) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ManageProductScreen(
+          index: index,
+        ),
+      ),
+    );
+  }
 
-  // void editProduct(Product p, int index) {
-  //   // listProducts[index].nameDesc = p.nameDesc;
-  //   // listProducts[index].price = p.price;
-  //   listProducts[index] = p;
-  //   setState(() {});
-  // }
-
-  // void openAddScreen() {
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (_) => ManageProductScreen(
-  //         add: addProduct,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // void openEditScreen(Product p, int index) {
-  //   Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (_) => ManageProductScreen(
-  //         edit: editProduct,
-  //         product: p,
-  //         index: index,
-  //       ),
-  //     ),
-  //   );
-  // }
+  void changeFavorite(BuildContext context, int index) {
+    Provider.of<Products>(context, listen: false).toggleFavorite(index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +37,7 @@ class ViewProductsScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
         actions: [
           IconButton(
-              onPressed: () {
-                var provider = Provider.of<Products>(context, listen: false);
-                provider.add(Product(
-                    productCode: 'productCode',
-                    nameDesc: 'nameDesc',
-                    price: 500));
-              },
-              icon: Icon(Icons.add)),
+              onPressed: () => openAddScreen(context), icon: Icon(Icons.add)),
         ],
       ),
       body: Consumer<Products>(
@@ -74,14 +48,26 @@ class ViewProductsScreen extends StatelessWidget {
             itemBuilder: (_, index) {
               return Card(
                 child: ListTile(
-                  onTap: null,
+                  onTap: () => openEditScreen(context, index),
+                  leading: IconButton(
+                    onPressed: () => changeFavorite(context, index),
+                    icon: Icon(products[index].isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_outline),
+                  ),
                   title: Text(products[index].nameDesc),
+                  trailing: IconButton(
+                      onPressed: null, icon: Icon(Icons.shopping_cart)),
                 ),
               );
             },
             itemCount: provider.totalNoItems,
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: null,
+        child: Icon(Icons.shopping_cart_checkout),
       ),
     );
   }
