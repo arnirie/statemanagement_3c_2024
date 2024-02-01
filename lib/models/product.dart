@@ -1,3 +1,5 @@
+import 'package:statemanagement_3c/helpers/dbhelper.dart';
+
 class Product {
   final String productCode;
   String nameDesc;
@@ -10,4 +12,12 @@ class Product {
     required this.price,
     this.isFavorite = false,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      DbHelper.prodCode: productCode,
+      DbHelper.prodName: nameDesc,
+      DbHelper.prodPrice: price,
+    };
+  }
 }

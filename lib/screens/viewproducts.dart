@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:statemanagement_3c/helpers/dbhelper.dart';
+import 'package:statemanagement_3c/models/cartitem.dart';
 import 'package:statemanagement_3c/models/product.dart';
+import 'package:statemanagement_3c/providers/cartprovider.dart';
 import 'package:statemanagement_3c/providers/productprovider.dart';
 import 'package:statemanagement_3c/screens/manageproduct.dart';
+import 'package:statemanagement_3c/screens/viewcart.dart';
 
 class ViewProductsScreen extends StatelessWidget {
   ViewProductsScreen({super.key});
@@ -29,8 +33,14 @@ class ViewProductsScreen extends StatelessWidget {
     Provider.of<Products>(context, listen: false).toggleFavorite(index);
   }
 
+  void openShoppingCart(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => ViewCartScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
+    DbHelper.openDb();
     return Scaffold(
       appBar: AppBar(
         title: Text('View Products'),
@@ -57,7 +67,14 @@ class ViewProductsScreen extends StatelessWidget {
                   ),
                   title: Text(products[index].nameDesc),
                   trailing: IconButton(
-                      onPressed: null, icon: Icon(Icons.shopping_cart)),
+                    onPressed: () {
+                      Provider.of<CartItems>(context, listen: false)
+                          .add(CartItem(
+                        productCode: products[index].productCode,
+                      ));
+                    },
+                    icon: Icon(Icons.shopping_cart),
+                  ),
                 ),
               );
             },
@@ -66,7 +83,7 @@ class ViewProductsScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: () => openShoppingCart(context),
         child: Icon(Icons.shopping_cart_checkout),
       ),
     );

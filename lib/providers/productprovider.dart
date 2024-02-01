@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:statemanagement_3c/helpers/dbhelper.dart';
 import 'package:statemanagement_3c/models/product.dart';
 
 class Products extends ChangeNotifier {
   List<Product> _items = [];
+
+  // List<Product> cartItems = [];
 
   List<Product> get items {
     return _items;
@@ -14,6 +17,7 @@ class Products extends ChangeNotifier {
 
   void add(Product p) {
     _items.add(p);
+    DbHelper.insertProduct(p);
     notifyListeners();
   }
 
