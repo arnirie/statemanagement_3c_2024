@@ -7,16 +7,19 @@ class Products extends ChangeNotifier {
 
   // List<Product> cartItems = [];
 
-  List<Product> get items {
-    return _items;
+  Future<List<Product>> get items async {
+    //from db
+    var list = await DbHelper.fetchProducts();
+    //List<Map<String, dynamic>> -> List<Product>
+    return list.map((element) => Product.fromMap(element)).toList();
   }
 
-  int get totalNoItems {
-    return _items.length;
-  }
+  // int get totalNoItems {
+  //   return _items.length;
+  // }
 
   void add(Product p) {
-    _items.add(p);
+    // _items.add(p);
     DbHelper.insertProduct(p);
     notifyListeners();
   }

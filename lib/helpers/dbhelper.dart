@@ -5,7 +5,7 @@ import 'package:statemanagement_3c/models/product.dart';
 class DbHelper {
   //constants
   static const dbName = 'products.db';
-  static const dbVersion = 1;
+  static const dbVersion = 2;
   //table: products
   static const tbProduct = 'product';
   static const prodCode = 'code';
@@ -37,5 +37,13 @@ class DbHelper {
     final db = await openDb();
     db.insert(tbProduct, product.toMap());
     print('inserted product');
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchProducts() async {
+    final db = await openDb();
+    // return await db.rawQuery('SELECT * FROM $tbProduct');
+    return await db.query(
+      tbProduct,
+    );
   }
 }

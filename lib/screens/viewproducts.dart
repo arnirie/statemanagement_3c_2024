@@ -40,7 +40,6 @@ class ViewProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DbHelper.openDb();
     return Scaffold(
       appBar: AppBar(
         title: Text('View Products'),
@@ -52,33 +51,51 @@ class ViewProductsScreen extends StatelessWidget {
       ),
       body: Consumer<Products>(
         builder: (_, provider, child) {
-          var products = provider.items;
-          return ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemBuilder: (_, index) {
-              return Card(
-                child: ListTile(
-                  onTap: () => openEditScreen(context, index),
-                  leading: IconButton(
-                    onPressed: () => changeFavorite(context, index),
-                    icon: Icon(products[index].isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_outline),
-                  ),
-                  title: Text(products[index].nameDesc),
-                  trailing: IconButton(
-                    onPressed: () {
-                      Provider.of<CartItems>(context, listen: false)
-                          .add(CartItem(
-                        productCode: products[index].productCode,
-                      ));
-                    },
-                    icon: Icon(Icons.shopping_cart),
-                  ),
-                ),
+          return FutureBuilder(
+            future: provider.items,
+            builder: (context, snapshot) {
+              //not yet ready
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              //ready but not records
+              if (snapshot.data == null || snapshot.data!.isEmpty) {
+                return Center(
+                  child: Text('No records found'),
+                );
+              }
+              //ready
+              var prodList = snapshot.data!;
+              return ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemBuilder: (_, index) {
+                  return Card(
+                    child: ListTile(
+                      onTap: () => openEditScreen(context, index),
+                      leading: IconButton(
+                        onPressed: () => changeFavorite(context, index),
+                        icon: Icon(prodList[index].isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_outline),
+                      ),
+                      title: Text(prodList[index].nameDesc),
+                      trailing: IconButton(
+                        onPressed: () {
+                          Provider.of<CartItems>(context, listen: false)
+                              .add(CartItem(
+                            productCode: prodList[index].productCode,
+                          ));
+                        },
+                        icon: Icon(Icons.shopping_cart),
+                      ),
+                    ),
+                  );
+                },
+                itemCount: prodList.length,
               );
             },
-            itemCount: provider.totalNoItems,
           );
         },
       ),
